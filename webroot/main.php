@@ -13,8 +13,8 @@ header('content-type: text/plain');
 $host = $_SERVER['SERVER_NAME'];
 $host_path = sprintf('%s/var/%s', APP_ROOT, rawurlencode($host));
 if ( ! is_dir($host_path)) {
+	mkdir($host_path, 0775, true);
 	_exit_html('<h1>This Host is NOT configured</h1>');
-	// mkdir($host_path, 0775, true);
 }
 
 $dbc = _dbc($host);
@@ -40,32 +40,48 @@ if (empty($chk)) {
 	_exit_html("<h1>You had no USER level keypair, they were created</h1><p>Copy this value and do NOT lose it</p><pre>$val</pre>");
 }
 
-exit;
 
 // Path
 $path0 = $_SERVER['REQUEST_URI'];
 $path0 = strtok($path0, '?');
 // stanatize double slashed to remove them all
 $path1 = $path0;
-// $path1 = ltrim($path0, './');
 $path1 = preg_replace('/\/+/', '/', $path1);
-// if ($path0 != $path1) {
-// 	_exit_html("<h1>Should Redirect '$path0' =&gt; '$path1'</h1>");
-// }
+if ($path0 != $path1) {
+	_exit_html("<h1>Should Redirect '$path0' =&gt; '$path1'</h1>");
+}
+// $path1 = substr($path1, 0, strpos($path1, '/', 1));
+// var_dump($path1); exit;
+$path1 = ltrim($path0, './');
 $path_list = explode('/', $path1);
+// var_dump($path_list); exit;
 
 // Switch base from ActivityPub Object Type?
-switch ($path1) {
+switch (sprintf('/%s', $path_list[0])) {
 case '':
 case '/': // home
 
-	$text = file_get_contents(sprintf('%s/home.md', $host_path));
-	$html = _text_to_html($text);
-	// $feed = $dbc->fetchAll('SELECT * FROM ')
-	_exit_html($html);
+	ob_start();
+	require_once(APP_ROOT . '/view/home.php');
+	_exit_html(ob_get_clean());
+
+	// $text = file_get_contents(sprintf('%s/home.md', $host_path));
+	// $html = _text_to_html($text);
+	// // $feed = $dbc->fetchAll('SELECT * FROM ')
+	// _exit_html($html);
+
+case '/incoming':
+	require_once(APP_ROOT . '/view/incoming.php');
+	break;
+case '/outgoing':
+	require_once(APP_ROOT . '/view/incoming.php');
+	break;
+case '/publish':
+	require_once(APP_ROOT . '/view/publish.php');
+	break;
 }
 
-// print_r(get_included_files());
-// print_r(memory_get_peak_usage(true));
+print_r(get_included_files());
+print_r(memory_get_peak_usage(true));
 
 exit(0);

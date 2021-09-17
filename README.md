@@ -2,7 +2,13 @@
 
 PHP, libsodium, ActivityPub
 
-##
+## ActivityPub
+
+* https://www.w3.org/TR/activitypub/
+
+
+## libsodium
+
 
 
 ## SSL Certificates
