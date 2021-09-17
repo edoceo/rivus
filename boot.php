@@ -16,8 +16,8 @@ function _dbc($host)
 	$dbc = new \Edoceo\Radix\DB\SQL(sprintf('sqlite:%s', $sql_file));
 	if ( ! $sql_good) {
 		$dbc->query('CREATE TABLE _saltfan (key PRIMARY KEY, val)');
-		$dbc->query('CREATE TABLE post_incoming (id PRIMARY KEY, link, name, body, meta)');
-		$dbc->query('CREATE TABLE post_outgoing (id PRIMARY KEY, link, name, body, meta)');
+		$dbc->query('CREATE TABLE post_incoming (id PRIMARY KEY, link, type, name, source, output, meta)');
+		$dbc->query('CREATE TABLE post_outgoing (id PRIMARY KEY, link, type, name, source, output, meta)');
 	}
 
 	return $dbc;
