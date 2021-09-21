@@ -16,6 +16,20 @@ header('content-type: text/html; charset=utf-8');
 <link rel="stylesheet" href="https://nobscss.com/nobs.css" crossorigin="anonymous">
 <title><?= __h(strip_tags($this->name)) ?></title>
 <style>
+header {
+	background: var(--bg2);
+}
+header nav ul {
+	display: flex;
+	list-style-type: none;
+}
+header nav ul li {
+	margin: 0;
+	padding: 0.25rem 0.50rem;
+}
+header nav ul li a:hover {
+	color: red;
+}
 main {
 	margin: 0 1vw;
 	max-width: 1120px;
