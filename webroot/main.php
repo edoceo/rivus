@@ -8,18 +8,20 @@ require_once(sprintf('%s/boot.php', dirname(__DIR__)));
 header('cache-control: no-store,max-age=0');
 header('content-type: text/plain');
 
-
 // Host
 $host = $_SERVER['SERVER_NAME'];
 $host_path = sprintf('%s/var/%s', APP_ROOT, rawurlencode($host));
 if ( ! is_dir($host_path)) {
-	mkdir($host_path, 0775, true);
-	_exit_html('<h1>This Host is NOT configured</h1>');
+	// mkdir($host_path, 0775, true);
+	_exit_html('<h1>This Host is NOT configured [SFM-017]</h1>', 'Error: 501', 501);
 }
+$_ENV['host'] = $host;
 
+// Check my database
 $dbc = _dbc($host);
 $chk = $dbc->fetchOne('SELECT val FROM _saltfan WHERE key = ?', [ 'site-ed25519-key-pair' ] );
 if (empty($chk)) {
+	// One string containing both the X25519 secret key and corresponding X25519 public key.
 	$val = sodium_crypto_box_keypair();
 	$val = sodium_bin2base64($val, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 	$dbc->query('INSERT INTO _saltfan VALUES (:k, :v)', [
@@ -27,8 +29,14 @@ if (empty($chk)) {
 		':v' => $val,
 	]);
 	_exit_html("<h1>You had no SITE level keypair, they were created</h1><p>Copy this value and do NOT lose it</p><pre>$val</pre>");
+} else {
+	$_ENV['site-key'] = sodium_base642bin($chk, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+	$_ENV['site-public-key-b64'] = sodium_bin2base64(sodium_crypto_box_publickey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 }
 
+
+// @deprecated
+// Load User Key?
 $chk = $dbc->fetchOne('SELECT val FROM _saltfan WHERE key = ?', [ 'user-ed25519-key-pair' ] );
 if (empty($chk)) {
 	$val = sodium_crypto_box_keypair();
@@ -38,7 +46,12 @@ if (empty($chk)) {
 		':v' => $val,
 	]);
 	_exit_html("<h1>You had no USER level keypair, they were created</h1><p>Copy this value and do NOT lose it</p><pre>$val</pre>");
+} else {
+	$_ENV['user-key'] = sodium_base642bin($chk, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 }
+
+// Configure Environment
+$cfg = $dbc->fetchAll("SELECT key, val FROM _saltfan WHERE key LIKE 'site-%'");
 
 
 // Path
@@ -60,6 +73,7 @@ $path_list = explode('/', $path1);
 switch (sprintf('/%s', $path_list[0])) {
 case '':
 case '/': // home
+case '/home':
 
 	ob_start();
 	require_once(APP_ROOT . '/view/home.php');
@@ -69,19 +83,37 @@ case '/': // home
 	// $html = _text_to_html($text);
 	// // $feed = $dbc->fetchAll('SELECT * FROM ')
 	// _exit_html($html);
-
+case '/ping':
+	ob_start();
+	require_once(APP_ROOT . '/view/ping.php');
+	_exit_html(ob_get_clean());
+case '/post':
+	ob_start();
+	require_once(APP_ROOT . '/view/post.php');
+	_exit_html(ob_get_clean());
 case '/incoming':
+	ob_start();
 	require_once(APP_ROOT . '/view/incoming.php');
+	_exit_html(ob_get_clean());
 	break;
 case '/outgoing':
-	require_once(APP_ROOT . '/view/incoming.php');
+	// https://www.w3.org/TR/activitypub/#public-addressing
+	ob_start();
+	require_once(APP_ROOT . '/view/outgoing.php');
+	_exit_html(ob_get_clean());
 	break;
 case '/publish':
+	ob_start();
 	require_once(APP_ROOT . '/view/publish.php');
+	_exit_html(ob_get_clean());
 	break;
 }
 
-print_r(get_included_files());
-print_r(memory_get_peak_usage(true));
+// Write Special Handlers Here?
+// switch ($path) {} or SELECT or in_array()?
 
-exit(0);
+// Write Redirectors Here?
+// switch ($path) {} or SELECT or in_array()?
+
+
+_exit_html('<h1>Not Found</h1>', 'Not Found: 404', 404);
