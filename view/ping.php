@@ -3,6 +3,8 @@
  *
  */
 
+use Edoceo\Rivus\B64;
+
 ?>
 
 <h1>Ping</h1>
@@ -22,15 +24,16 @@ site:            <?= $_ENV['host'] ?>
  * Show Crypto Box Keypairs
  */
 printf("site-public-key: <a href=\"/.well-known/site-public-key\">%s</a>\n",
-	sodium_bin2base64(sodium_crypto_box_publickey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
+	B64::encode(sodium_crypto_box_publickey($_ENV['site-key'])));
+
 
 //printf("SITE-KEY-Secret: %s\n",
-//	sodium_bin2base64(sodium_crypto_box_secretkey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
+//	B64::encode(sodium_crypto_box_secretkey($_ENV['site-key'])));
 
 echo "\n";
 
 printf("user-public-key: <a href=\"/.well-known/user-public-key\">%s</a>\n",
-	sodium_bin2base64(sodium_crypto_box_publickey($_ENV['user-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
+	B64::encode(sodium_crypto_box_publickey($_ENV['user-key'])));
 
 
 /**
