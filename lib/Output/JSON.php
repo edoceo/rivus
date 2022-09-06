@@ -3,7 +3,7 @@
  * JSON Type Output
  */
 
-namespace App\Output;
+namespace Edoceo\Rivus\Output;
 
 class JSON
 {

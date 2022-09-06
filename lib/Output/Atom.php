@@ -3,7 +3,7 @@
  *
  */
 
-namespace App\Output;
+namespace Edoceo\Rivus\Output;
 
 class Atom
 {
