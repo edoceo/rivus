@@ -5,23 +5,32 @@
 
 ?>
 
+<h1>Ping</h1>
+<p>Check this server status</p>
+
+
+<h2>Pong <small>ping reply</small></h2>
+
 <pre>
-HOST: <?= $_ENV['host'] ?>
+site:            <?= $_ENV['host'] ?>
 <?php
 // var_dump($_ENV);
 ?>
 
 <?php
 /**
- * Site Crypto Box Keypairs
+ * Show Crypto Box Keypairs
  */
-// printf("SITE-KEY: %s\n", sodium_bin2base64($_ENV['site-key'], SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
-
-printf("SITE-KEY-Public: <a href=\"/.well-known/site-public-key\">%s</a>\n", 
+printf("site-public-key: <a href=\"/.well-known/site-public-key\">%s</a>\n",
 	sodium_bin2base64(sodium_crypto_box_publickey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
 
 //printf("SITE-KEY-Secret: %s\n",
 //	sodium_bin2base64(sodium_crypto_box_secretkey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
+
+echo "\n";
+
+printf("user-public-key: <a href=\"/.well-known/user-public-key\">%s</a>\n",
+	sodium_bin2base64(sodium_crypto_box_publickey($_ENV['user-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING));
 
 
 /**
