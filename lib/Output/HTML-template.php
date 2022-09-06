@@ -11,9 +11,8 @@ header('content-type: text/html; charset=utf-8');
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="initial-scale=1, user-scalable=yes">
-<meta name="application-name" content="Saltfan">
+<meta name="application-name" content="Rivus">
 <meta name="theme-color" content="#0317a7">
-<link rel="stylesheet" href="https://nobscss.com/nobs.css" crossorigin="anonymous">
 <title><?= __h(strip_tags($this->name)) ?></title>
 <style>
 header {

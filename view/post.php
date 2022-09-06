@@ -100,9 +100,9 @@ switch ($_POST['a']) {
 			, "type" => "Follow"
 			, "actor" => sprintf("https://%s/", $_SERVER['SERVER_NAME']) // What? Me?
 			, "object" => $actor_base // Who I want to Follow
-			, "_salt_public" => $public_key0_b64
-			, "_salt_nonce" => $message_nonce_b64
-			, "_salt_content" => $message_crypt_b64
+			, "_rivus_public" => $public_key0_b64
+			, "_rivus_nonce" => $message_nonce_b64
+			, "_rivus_content" => $message_crypt_b64
 		]));
 
 		$res = curl_exec($req);

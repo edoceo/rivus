@@ -1,6 +1,8 @@
 <?php
 /**
- * Saltfan Incoming
+ * Rivus Incoming
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 switch ($_SERVER['REQUEST_METHOD']) {
@@ -15,19 +17,24 @@ switch ($_SERVER['REQUEST_METHOD']) {
 		// Folks POST to me?
 		$source = file_get_contents('php://input');
 		$source_data = json_decode($source, true);
+		if (empty($source_data)) {
+			__exit_text('Invalid Request [RVI-021]', 400);
+		}
+
+		// Validate the Activity Pub Stuff
 
 		// I'm the Target on Incoming
 		$target_secret_key = sodium_crypto_box_secretkey($_ENV['site-key']);
 
-		$source_public_key_b64 = $source_data['_salt_public'];
+		$source_public_key_b64 = $source_data['_rivus_public'];
 		$source_public_key = sodium_base642bin($source_public_key_b64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 
 
-		$message_crypt_b64 = $source_data['_salt_content'];
+		$message_crypt_b64 = $source_data['_rivus_content'];
 		$message_crypt = sodium_base642bin($message_crypt_b64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 		printf("incoming-message-crypt-size: %d\n", strlen($message_crypt));
 
-		$message_nonce_b64 = $source_data['_salt_nonce'];
+		$message_nonce_b64 = $source_data['_rivus_nonce'];
 		$message_nonce = sodium_base642bin($message_nonce_b64, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 
 		// $decrypt_pair

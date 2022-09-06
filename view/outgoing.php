@@ -1,6 +1,8 @@
 <?php
 /**
- * Saltfan Outgoing
+ * Rivus Outgoing
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 echo '<h1>Outgoing</h1>';

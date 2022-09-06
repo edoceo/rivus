@@ -1,6 +1,8 @@
 <?php
 /**
- * Main Controller for Saltfan
+ * Main Controller for Rivus
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 require_once(sprintf('%s/boot.php', dirname(__DIR__)));
@@ -19,12 +21,12 @@ $_ENV['host'] = $host;
 
 // Check my database
 $dbc = _dbc($host);
-$chk = $dbc->fetchOne('SELECT val FROM _saltfan WHERE key = ?', [ 'site-ed25519-key-pair' ] );
+$chk = $dbc->fetchOne('SELECT val FROM _rivus_config WHERE key = ?', [ 'site-ed25519-key-pair' ] );
 if (empty($chk)) {
 	// One string containing both the X25519 secret key and corresponding X25519 public key.
 	$val = sodium_crypto_box_keypair();
 	$val = sodium_bin2base64($val, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-	$dbc->query('INSERT INTO _saltfan VALUES (:k, :v)', [
+	$dbc->query('INSERT INTO _rivus_config VALUES (:k, :v)', [
 		':k' => 'site-ed25519-key-pair',
 		':v' => $val,
 	]);
@@ -37,21 +39,21 @@ if (empty($chk)) {
 
 // @deprecated
 // Load User Key?
-$chk = $dbc->fetchOne('SELECT val FROM _saltfan WHERE key = ?', [ 'user-ed25519-key-pair' ] );
+$chk = $dbc->fetchOne('SELECT val FROM _rivus_config WHERE key = ?', [ 'user-ed25519-key-pair' ] );
 if (empty($chk)) {
 	$val = sodium_crypto_box_keypair();
 	$val = sodium_bin2base64($val, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
-	$dbc->query('INSERT INTO _saltfan VALUES (:k, :v)', [
+	$dbc->query('INSERT INTO _rivus_config VALUES (:k, :v)', [
 		':k' => 'user-ed25519-key-pair',
 		':v' => $val,
 	]);
 	_exit_html("<h1>You had no USER level keypair, they were created</h1><p>Copy this value and do NOT lose it</p><pre>$val</pre>");
 } else {
-	$_ENV['user-key'] = sodium_base642bin($chk, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
+//	$_ENV['user-key'] = sodium_base642bin($chk, SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 }
 
 // Configure Environment
-$cfg = $dbc->fetchAll("SELECT key, val FROM _saltfan WHERE key LIKE 'site-%'");
+$cfg = $dbc->fetchAll("SELECT key, val FROM _rivus_config WHERE key LIKE 'site-%'");
 
 
 // Path
@@ -65,7 +67,7 @@ if ($path0 != $path1) {
 }
 // $path1 = substr($path1, 0, strpos($path1, '/', 1));
 // var_dump($path1); exit;
-$path1 = ltrim($path0, './');
+$path1 = ltrim($path0, '/');
 $path_list = explode('/', $path1);
 // var_dump($path_list); exit;
 
@@ -107,6 +109,9 @@ case '/publish':
 	require_once(APP_ROOT . '/view/publish.php');
 	_exit_html(ob_get_clean());
 	break;
+// Rivus Code Here
+case '/.public':
+	__exit_text($_ENV['site-public-key-b64']);
 }
 
 // Write Special Handlers Here?
@@ -114,6 +119,5 @@ case '/publish':
 
 // Write Redirectors Here?
 // switch ($path) {} or SELECT or in_array()?
-
 
 _exit_html('<h1>Not Found</h1>', 'Not Found: 404', 404);

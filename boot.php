@@ -1,6 +1,8 @@
 <?php
 /**
- * Saltfan Bootstrap
+ * Rivus Bootstrap
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 define('APP_ROOT', __DIR__);
@@ -16,7 +18,7 @@ function _dbc($host)
 	$dbc = new \Edoceo\Radix\DB\SQL(sprintf('sqlite:%s', $sql_file));
 	if ( ! $sql_good) {
 		$dbc->query('CREATE TABLE _keylist (key PRIMARY KEY, name)');
-		$dbc->query('CREATE TABLE _saltfan (key PRIMARY KEY, val)');
+		$dbc->query('CREATE TABLE _rivus_config (key PRIMARY KEY, val)');
 		$dbc->query('CREATE TABLE post_incoming (id PRIMARY KEY, link, type, name, source, output, meta)');
 		$dbc->query('CREATE TABLE post_outgoing (id PRIMARY KEY, link, type, name, source, output, meta)');
 	}
@@ -31,7 +33,7 @@ function _dbc($host)
 /**
  *
  */
-function _exit_html($body, $name='Saltfan', $code=200)
+function _exit_html($body, $name='Rivus', $code=200)
 {
 	$view = new App\Output\HTML($body);
 	$view->setPageTitle($name);
