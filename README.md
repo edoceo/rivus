@@ -3,7 +3,7 @@
 An application for receiving taking incoming Feeds (Atom, JSON, RSS, Social) into your own stream.
 An application for publishing outgoing Social on your own domain using ActivityPub.
 
-Using: PHP, [libsodium](https://nacl.cr.yp.to/), [ActivityPub](https://www.w3.org/TR/activitypub/)
+Using: [PHP], [libsodium](https://doc.libsodium.org/) and [ActivityPub](https://www.w3.org/TR/activitypub/)
 
 
 ## Subscribing
@@ -68,15 +68,27 @@ To get the Rivus code to host a site you'll need to create the directory in `./v
 We intentionally don't make the path automatically because then the system get's littered with new paths from all kinds of drive-by HTTP noise.
 Better to serve them a `501` or `404` type resonse.
 
+## Posting Publicly
 
-## Sending Anon Incoming
+Just write something.
+
+
+## Sending Anon/Encrypted Message to Recipient
 
 Encrypt a message to the Public Key; but not from any specific Source Key
 
-```
+```php
 // Source
 $message_crypt = sodium_crypto_box_seal($message_plain, $target_public_key);
 // Target
 $message_plain = sodium_crypto_box_seal_open($message_crypt, $target_key_pair);
 ```
 
+## Sending Verified Encrypted Message to Recipient
+
+```php
+// Source
+$crypt = rivus_box($plain, $source_sk, $target_pk)
+// Target
+$plain = rivus_box_open($crypt, $target_sk)
+```
