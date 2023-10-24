@@ -5,11 +5,21 @@
  * SPDX-License-Identifier: MIT
  */
 
+
+use ActivityPhp\Type\TypeConfiguration;
+
 define('APP_ROOT', __DIR__);
 require_once(__DIR__ . '/vendor/autoload.php');
 
 error_reporting(E_ALL & ~E_NOTICE);
 
+// Configure ActivtyPub libs
+TypeConfiguration::set('undefined_properties', 'include');
+
+
+/**
+ *
+ */
 function _dbc($host)
 {
 	$sql_file = sprintf('%s/var/%s/database.sqlite', APP_ROOT, $host);
@@ -31,16 +41,18 @@ function _dbc($host)
 
 
 /**
- *
+ * Exit w/some HTML Output
  */
 function _exit_html($body, $name='Rivus', $code=200)
 {
-	$view = new App\Output\HTML($body);
+	$view = new Edoceo\Rivus\Output\HTML($body);
 	$view->setPageTitle($name);
 	__exit_html($view->render(), $code);
 }
 
-
+/**
+ * Turn Markdown into HTML
+ */
 function _text_to_html($t)
 {
 	$pde = new ParsedownExtra();
