@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Rivus PHPUnit Configuration File
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+	backupGlobals="false"
+	backupStaticAttributes="false"
+	bootstrap="boot.php"
+	cacheResult="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	processIsolation="false"
+	stopOnError="false"
+	stopOnFailure="false"
+	stopOnRisky="false"
+	timeoutForSmallTests="1"
+	timeoutForMediumTests="10"
+	timeoutForLargeTests="60"
+	verbose="true"
+	>
+
+	<coverage />
+
+	<php>
+		<env name="debug-http" value="false" />
+	</php>
+
+	<testsuites>
+
+		<testsuite name="Core">
+			<directory>Core</directory>
+			<directory>Auth</directory>
+			<directory>Outgoing</directory>
+			<directory>Incoming</directory>
+		</testsuite>
+
+		<testsuite name="All">
+			<directory>.</directory>
+		</testsuite>
+
+	</testsuites>
+
+</phpunit>
