@@ -1,7 +1,11 @@
 <?php
 /**
+ * Create a Post, and ActivtyPub Thing
  *
+ * SPDX-License-Identifier: MIT
  */
+
+global $dbc;
 
 switch ($_POST['a']) {
 	case 'activity-create':
@@ -122,9 +126,12 @@ switch ($_POST['a']) {
 ?>
 
 <form enctype="multipart/form-data" method="post">
+
+<input name="CSRF" type="hidden" value="<?= $CSRF ?>">
+
 <h1>POST to your Feed</h1>
 
-<select name="activity-type">
+<select class="form-control" name="activity-type">
 	<option value="">- select content type -</option>
 	<option>Article</option>
 	<option>Audio</option>
@@ -139,17 +146,17 @@ switch ($_POST['a']) {
 
 <div id="activity-text">
 	<label>Activity Source <small>(Article, Document?, Event?, Note, Place?)</small></label>
-	<textarea name="activity-source-text" style="width:100%;"></textarea>
+	<textarea class="form-control" name="activity-source-text"></textarea>
 </div>
 
 <div id="activity-link">
 	<label>Activity Link <small>(Audio?, Document?, Image?, Page, Video?)</small></label>
-	<input name="activity-source-link" style="width:100%;" type="url">
+	<input class="form-control" name="activity-source-link" type="url">
 </div>
 
 <div id="activity-file">
 	<label>Activity File <small>(Audio, Document, Image, Video)</small></label>
-	<input name="activity-source-file" style="width:100%;" type="file">
+	<input class="form-control" name="activity-source-file" type="file">
 </div>
 
 <div id="publish-group">
@@ -159,7 +166,7 @@ switch ($_POST['a']) {
 
 
 <div>
-	<button name="a" type="submit" value="activity-create">Create</button>
+	<button class="btn btn-primary" name="a" type="submit" value="activity-create">Create</button>
 </div>
 
 </form>
@@ -167,10 +174,16 @@ switch ($_POST['a']) {
 <hr>
 
 <form method="post">
-<section>
-	<h2>Follow Someone</h2>
-	<input name="follow-url" style="width:100%;" type="url">
-	<input name="CSRF" type="hidden" value="<?= $CSRF ?>">
-	<button name="a" value="follow-create">Follow</button>
+<section class="card">
+	<h2 class="card-header">Follow Someone</h2>
+	<div class="card-body">
+		<div class="input-group">
+			<span class="input-group-text">Link:</span>
+			<input class="form-control" name="follow-url" type="url">
+		</div>
+	</div>
+	<div class="card-footer">
+		<button class="btn btn-primary" name="a" value="follow-create">Follow</button>
+	</div>
 </section>
 </form>
