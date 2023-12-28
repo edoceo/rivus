@@ -12,23 +12,15 @@ $host = $_SERVER['SERVER_NAME'];
 $host = strtolower($host);
 $_ENV['host'] = $host;
 
-$host_database = sprintf('%s/var/%s.sqlite', APP_ROOT, rawurlencode($host));
-if ( ! is_file($host_database)) {
-	_exit_html('<h1>This Site is NOT configured, the database must be created [SFM-017]</h1>', 'Error: 501', 501);
+$host_path = sprintf('%s/var/%s', APP_ROOT, rawurlencode($host));
+if ( ! is_dir($host_path)) {
+	// mkdir($host_path, 0775, true);
+	_exit_html('<h1>This Host is NOT configured [SFM-017]</h1>', 'Error: 501', 501);
 }
 
-// Path
-$path0 = $_SERVER['REQUEST_URI'];
-$path0 = strtok($path0, '?');
-$path0 = preg_replace('/[^\w\/\-\.]+/', '', $path0);
-$path0 = trim($path0, '/. ');
-
-$_ENV['path'] = $path0;
-
-$path_list = explode('/', $_ENV['path']);
 
 // Check my database
-$dbc = _dbc($host_database);
+$dbc = _dbc($host);
 
 // Site Key
 $chk = $dbc->fetchOne('SELECT val FROM _rivus_config WHERE key = ?', [ 'site-ed25519-key-pair' ] );
@@ -48,6 +40,7 @@ if (empty($chk)) {
 
 
 // User Key
+// @deprecated?
 $chk = $dbc->fetchOne('SELECT val FROM _rivus_config WHERE key = ?', [ 'user-ed25519-key-pair' ] );
 if (empty($chk)) {
 	$val = sodium_crypto_box_keypair();
@@ -64,6 +57,21 @@ if (empty($chk)) {
 
 // Configure Environment
 $cfg = $dbc->fetchAll("SELECT key, val FROM _rivus_config WHERE key LIKE 'site-%'");
+
+
+// Path
+$path0 = $_SERVER['REQUEST_URI'];
+$path0 = strtok($path0, '?');
+$path0 = trim($path0, '/. ');
+// // stanatize double slashed to remove them all
+// $path1 = $path0;
+// $path1 = preg_replace('/\/+/', '/', $path1);
+// if ($path0 != $path1) {
+// 	_exit_html("<h1>Should Redirect '$path0' =&gt; '$path1'</h1>");
+// }
+// $path1 = ltrim($path0, '/');
+$path_list = explode('/', $path0);
+
 
 // Switch base from ActivityPub Object Type?
 switch (sprintf('/%s', $path_list[0])) {
