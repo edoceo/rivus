@@ -1,6 +1,6 @@
+#!/bin/bash
 
-
-composer update -a
+composer install -a
 
 npm install
 
