@@ -25,12 +25,12 @@
         </a>
       </li>
       <li>
-        <a href="/incoming/create" class="nav-link text-white">
+        <a href="/incoming" class="nav-link text-white">
           Incoming
         </a>
       </li>
       <li>
-        <a href="/outgoing/create" class="nav-link text-white">
+        <a href="/outgoing" class="nav-link text-white">
           Outgoing
         </a>
       </li>
