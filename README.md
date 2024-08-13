@@ -68,6 +68,10 @@ To get the Rivus code to host a site you'll need to create the directory in `./v
 We intentionally don't make the path automatically because then the system get's littered with new paths from all kinds of drive-by HTTP noise.
 Better to serve them a `501` or `404` type resonse.
 
+```
+install --directory --mode=0755 --owner=www-data --group=www-data var/$SERVER_NAME
+```
+
 ## Posting Publicly
 
 Just write something.
