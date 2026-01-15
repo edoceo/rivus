@@ -14,10 +14,8 @@ $_ENV['host'] = $host;
 
 $host_path = sprintf('%s/var/%s', APP_ROOT, rawurlencode($host));
 if ( ! is_dir($host_path)) {
-	// mkdir($host_path, 0775, true);
 	_exit_html('<h1>This Host is NOT configured [SFM-017]</h1>', 'Error: 501', 501);
 }
-
 
 // Check my database
 $dbc = _dbc($host);
@@ -38,7 +36,6 @@ if (empty($chk)) {
 	$_ENV['site-public-key-b64'] = sodium_bin2base64(sodium_crypto_box_publickey($_ENV['site-key']), SODIUM_BASE64_VARIANT_URLSAFE_NO_PADDING);
 }
 
-
 // User Key
 // @deprecated?
 $chk = $dbc->fetchOne('SELECT val FROM _rivus_config WHERE key = ?', [ 'user-ed25519-key-pair' ] );
@@ -58,26 +55,11 @@ if (empty($chk)) {
 // Configure Environment
 $cfg = $dbc->fetchAll("SELECT key, val FROM _rivus_config WHERE key LIKE 'site-%'");
 
+$hrr = new \Edoceo\Radix\HTTP\Router();
+$hrr->add('/', function() { __exit_text('/'); });
+$hrr->add('/home', function() {
 
-// Path
-$path0 = $_SERVER['REQUEST_URI'];
-$path0 = strtok($path0, '?');
-$path0 = trim($path0, '/. ');
-// // stanatize double slashed to remove them all
-// $path1 = $path0;
-// $path1 = preg_replace('/\/+/', '/', $path1);
-// if ($path0 != $path1) {
-// 	_exit_html("<h1>Should Redirect '$path0' =&gt; '$path1'</h1>");
-// }
-// $path1 = ltrim($path0, '/');
-$path_list = explode('/', $path0);
-
-
-// Switch base from ActivityPub Object Type?
-switch (sprintf('/%s', $path_list[0])) {
-case '':
-case '/': // home
-case '/home':
+	// __exit_text($_SERVER['SERVER_NAME']);
 
 	ob_start();
 	require_once(APP_ROOT . '/view/home.php');
@@ -88,38 +70,78 @@ case '/home':
 	// // $feed = $dbc->fetchAll('SELECT * FROM ')
 	// _exit_html($html);
 
-case '/config':
+});
+
+// Feed Views
+$hrr->add('/feed', function() { __exit_text('Show My Feed, My Self-Published Outgoing'); });
+$hrr->add('/feed/atom.xml', function() { __exit_text('Show My Feed, My Self-Published Outgoing'); });
+$hrr->add('/feed/feed.json', function() { __exit_text('Show My Feed, My Self-Published Outgoing'); });
+$hrr->add('/feed/rss.xml', function() { __exit_text('Show My Feed, My Self-Published Outgoing'); });
+
+$hrr->add('/auth', 'Edoceo\Rivus\Auth\Main');
+// $hrr->add('/auth/open', 'Edoceo\Rivus\Auth\Main');
+// $hrr->add('/auth/open', 'Edoceo\Rivus\Auth\Main', 'POST');
+// $hrr->add('/auth/token', 'Edoceo\Rivus\Auth\Main');
+
+// $hrr->add('/cal', 'Edoceo\Rivus\Calendar\Pub');
+
+$hrr->add('/incoming', 'Edoceo\Rivus\Incoming');
+$hrr->add('/outgoing', 'Edoceo\Rivus\Outgoing');
+
+$hrr->add('/config', function() {
 	ob_start();
 	require_once(APP_ROOT . '/app/config/main.php');
 	_exit_html(ob_get_clean());
-	break;
-case '/ping':
+});
+$hrr->add('/ping', function() {
 	ob_start();
 	require_once(APP_ROOT . '/view/ping.php');
 	_exit_html(ob_get_clean());
-case '/post':
+});
+$hrr->add('/post', function() {
 	ob_start();
 	require_once(APP_ROOT . '/view/post.php');
 	_exit_html(ob_get_clean());
-case '/incoming':
-	ob_start();
-	require_once(APP_ROOT . '/app/incoming/main.php');
-	_exit_html(ob_get_clean());
-	break;
-case '/outgoing':
-	// https://www.w3.org/TR/activitypub/#public-addressing
-	ob_start();
-	require_once(APP_ROOT . '/view/outgoing.php');
-	_exit_html(ob_get_clean());
-	break;
-case '/publish':
+});
+$hrr->add('/publish', function() {
 	ob_start();
 	require_once(APP_ROOT . '/view/publish.php');
 	_exit_html(ob_get_clean());
-	break;
-// Rivus Code Here
-case '/.public':
+});
+
+$hrr->add('/.public', function() {
 	__exit_text($_ENV['site-public-key-b64']);
-}
+});
+$hrr->add('/.well-known', function() {
+
+	switch ($path_list[1]) {
+		case '':
+			__exit_text('.well-known');
+			break;
+		case 'site-public-key':
+			__exit_text($_ENV['site-public-key-b64']);
+			break;
+		case 'user-public-key':
+			__exit_text($_ENV['user-public-key-b64']);
+			break;
+	}
+	// return \Rivus\Controller\WellKnown($path_list);
+
+});
+
+// $hrr->add('/email', 'Edoceo\Rivus\Email\Main');
+// $hrr->add('/email', 'Edoceo\Rivus\Email\Main', 'POST');
+// $hrr->add('/pitch', 'Edoceo\Rivus\Pitch\Main');
+// $hrr->add('/pitch/video', 'Edoceo\Rivus\Pitch\Main');
+// $hrr->add('/program', 'Edoceo\Rivus\Program\Main');
+// $hrr->add('/program/{program_code}', 'Edoceo\Rivus\Program\Main');
+// $hrr->add('/timer', 'Edoceo\Rivus\Timer\Main');
+// $hrr->add('/vote', 'Edoceo\Rivus\Vote\Main');
+
+$REQ = new \Edoceo\Radix\HTTP\Request();
+$RES = $hrr->handle($REQ);
+
+
+exit;
 
 _exit_html('<h1>Not Found</h1>', 'Not Found: 404', 404);

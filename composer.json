@@ -14,8 +14,8 @@
 	"require": {
 		"php": ">=7.3.0",
 		"docopt/docopt": "1.0.5",
-		"edoceo/radix": "2021.0.0",
-		"edoceo/lowline": "2022.0.280",
+		"edoceo/radix": "dev-master",
+		"edoceo/lowline": "dev-master",
 		"erusev/parsedown-extra": "0.8.1",
 		"geoip2/geoip2": "2.13.0",
 		"landrok/activitypub": "0.5.8"

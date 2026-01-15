@@ -5,23 +5,73 @@
  * SPDX-License-Identifier: MIT
  */
 
-
-use ActivityPhp\Type\TypeConfiguration;
-
-define('APP_ROOT', __DIR__);
 require_once(__DIR__ . '/vendor/autoload.php');
 
-error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+
+/**
+ * Error Handler
+ */
+set_error_handler(function($num=null, $str=null, $file=null, $line=null, $ctx=null) {
+
+	while (ob_get_level()) {
+		ob_end_clean();
+	}
+
+	$file = str_replace(__DIR__, '', $file);
+
+	$text = [];
+	$text[] = sprintf('Error %d / %s', $num, $str);
+	if ( ! empty($file)) {
+		$text[] = sprintf('File: %s#%d' , $file, $line);
+	}
+
+	$text = implode("\n", $text);
+
+	__exit_text($text, 500);
+
+}, E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+
+/**
+ * Exception Handler
+ */
+set_exception_handler(function($ex) {
+
+	while (ob_get_level()) {
+		ob_end_clean();
+	}
+
+	$file = $ex->getFile();
+	$file = str_replace(__DIR__, '', $file);
+
+	$text = [];
+	$text[] = 'Exception: ' . get_class($ex);
+	$text[] = $ex->getMessage();
+	$text[] = sprintf('File: %s#%d', $file, $ex->getLine());
+
+	$text = implode("\n", $text);
+
+	__exit_text($text, 500);
+
+});
 
 // Configure ActivtyPub libs
-TypeConfiguration::set('undefined_properties', 'include');
+\ActivityPhp\Type\TypeConfiguration::set('undefined_properties', 'include');
+
+define('APP_ROOT', __DIR__);
+define('__PHP_USERAGENT', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
+
 
 
 /**
  *
  */
-function _dbc($host)
+function _dbc(string $host='')
 {
+	if (empty($host)) {
+		$host = $_SERVER[''];
+	}
+
 	$sql_file = sprintf('%s/var/%s/database.sqlite', APP_ROOT, $host);
 	$sql_good = is_file($sql_file);
 
@@ -34,6 +84,8 @@ function _dbc($host)
 	}
 
 	$dbc->query('CREATE TABLE IF NOT EXISTS _keylist (key PRIMARY KEY, name)');
+	$dbc->query('CREATE TABLE IF NOT EXISTS "feed_source" (id PRIMARY KEY, created_at NUMERIC, checked_at NUMERIC, updated_at NUMERIC, stat NUMERIC, link TEXT, type TEXT, name TEXT, source TEXT, output TEXT, meta TEXT)');
+
 
 	return $dbc;
 
