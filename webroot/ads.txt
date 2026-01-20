@@ -1,0 +1,5 @@
+#
+# https://en.wikipedia.org/wiki/Ads.txt
+#
+
+# <ad-domain>, <publisher-id>, <relationship>, <cert>

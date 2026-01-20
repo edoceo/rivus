@@ -1,0 +1,14 @@
+#
+# Hello Robots!
+# Everything is Open!
+#
+# @see https://en.wikipedia.org/wiki/Robots.txt
+#
+
+sitemap: 
+
+# 
+content-signal: ai-train=no, search=yes, ai-input=no
+
+user-agent: *
+crawl-delay: 4
