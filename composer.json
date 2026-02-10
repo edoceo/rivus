@@ -3,9 +3,6 @@
 	"description": "Rivus Social Stream Manager",
 	"license": "MIT",
 	"autoload": {
-		"exclude-from-classmap": [
-			"vendor/erusev/parsedown-extra/test"
-		],
 		"psr-4": {
 			"Edoceo\\Rivus\\": "./lib",
 			"Edoceo\\Rivus\\Test\\": "./test"
@@ -16,11 +13,11 @@
 		"docopt/docopt": "1.0.5",
 		"edoceo/radix": "dev-main",
 		"edoceo/lowline": "dev-master",
-		"erusev/parsedown-extra": "0.8.1",
 		"geoip2/geoip2": "2.13.0",
 		"landrok/activitypub": "0.5.8",
 		"guzzlehttp/guzzle": "^7.10",
-		"league/oauth2-google": "^4.1"
+		"league/oauth2-google": "^4.1",
+		"league/commonmark": "^2.8"
 	},
 	"require-dev": {
 		"phpstan/phpstan": "1.9.1",
