@@ -1,6 +1,8 @@
 <?php
 /**
  * JSON Type Output
+ *
+ * SPDX-License-Identifier: MIT
  */
 
 namespace Edoceo\Rivus\Output;
