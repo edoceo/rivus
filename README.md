@@ -1,10 +1,11 @@
 # Rivus
 
 An application for receiving taking incoming Feeds (Atom, JSON, RSS, Social) into your own stream.
-An application for publishing outgoing Social on your own domain using ActivityPub.
+An application for publishing outgoing Social on your own domain using ActivityPub, RSS, Atom and HTML as well as to other social networks (ie: POSSE)
 
-Using: [PHP], [libsodium](https://doc.libsodium.org/) and [ActivityPub](https://www.w3.org/TR/activitypub/)
+Built with: [PHP], [libsodium](https://doc.libsodium.org/) and [ActivityPub](https://www.w3.org/TR/activitypub/)
 
+---
 
 ## Subscribing
 
@@ -96,3 +97,8 @@ $crypt = rivus_box($plain, $source_sk, $target_pk)
 // Target
 $plain = rivus_box_open($crypt, $target_sk)
 ```
+
+## See Also
+
+- https://hukt.ai/
+- https://buffer.com/
