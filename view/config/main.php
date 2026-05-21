@@ -44,11 +44,33 @@ switch ($_POST['a']) {
 				}
 				break;
 			default:
+
+				header('content-type: text/plain');
+
 				// Maybe a Regular Feed
 				// Add to the feed_source table?
 				echo "Feed Import is Odd\n";
+				var_dump($info);
 				var_dump($feed_import);
+
+
+				$chk = $dbc->fetchOne('SELECT id FROM feed_source WHERE link = :l0', [ ':l0' => $url ]);
+				if (empty($chk)) {
+					$rec = [];
+					$rec['id'] = md5($url);
+					$rec['created_at'] = time();
+					$rec['type'] = $info['mime'];
+					$rec['link'] = $info['url'];
+					$rec['name'] = $info['url'];
+					$rec['source'] = json_encode($info);
+					// $rec['id'] = md5($rec['source']);
+					var_dump($rec);
+					$dbc->insert('feed_source', $rec);
+				}
+
 		}
+
+		exit;
 
 		Radix::redirect('/config');
 
